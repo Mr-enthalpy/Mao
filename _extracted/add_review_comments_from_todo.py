@@ -100,15 +100,20 @@ def ensure_document_rels(rels_root: etree._Element) -> None:
 
 
 def add_comment_anchor(p: etree._Element, comment_id: int) -> None:
+    insert_at = 1 if len(p) and p[0].tag == w("pPr") else 0
+
     start = etree.Element(w("commentRangeStart"))
     start.set(w("id"), str(comment_id))
-    p.insert(0, start)
+    p.insert(insert_at, start)
 
     end = etree.Element(w("commentRangeEnd"))
     end.set(w("id"), str(comment_id))
     p.append(end)
 
     run = etree.SubElement(p, w("r"))
+    rpr = etree.SubElement(run, w("rPr"))
+    rstyle = etree.SubElement(rpr, w("rStyle"))
+    rstyle.set(w("val"), "CommentReference")
     ref = etree.SubElement(run, w("commentReference"))
     ref.set(w("id"), str(comment_id))
 
